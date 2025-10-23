@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "D:/Python/Final Project/rental-backend/src"
+    ],
+    "python.defaultInterpreterPath": "D:/Python/Final Project/rental-backend/venv/Scripts/python.exe"
+}

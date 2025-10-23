@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.git/
+.gitignore
+.env
+.env.prod
+dev/
+.idea/
+pytest.ini
+.pytest_cache/
+nginx/*.conf~

@@ -1,0 +1,23 @@
+/* === Фон для страницы входа === */
+body.login {
+    background: url("/static/img/city-dg.png") no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+}
+
+body.login #login-form {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+}
+
+/* === Фон для панели админки === */
+body {
+    background: url("/static/img/city-dg.png") no-repeat center center fixed !important;
+    background-size: cover !important;
+}
+
+/* Чтобы панель и карточки были читаемы */
+.card, .content-wrapper {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(5px);
+}

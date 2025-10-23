@@ -1,0 +1,54 @@
+name: Django API Tests
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:15
+        env:
+          POSTGRES_DB: rental
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run migrations
+        env:
+          DJANGO_SETTINGS_MODULE: src.config.settings
+          DATABASE_URL: postgres://postgres:postgres@db:5432/rental
+        run: |
+          python manage.py migrate --noinput
+
+      - name: Run pytest
+        env:
+          DJANGO_SETTINGS_MODULE: src.config.settings
+          DATABASE_URL: postgres://postgres:postgres@db:5432/rental
+        run: |
+          pytest -v --disable-warnings

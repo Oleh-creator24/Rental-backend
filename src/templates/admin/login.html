@@ -1,0 +1,30 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div id="login-form" class="d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%;">
+        <div class="text-center mb-4">
+            <img src="{% static 'img/logo.png' %}" alt="HedgeWood Logo" style="max-width:200px; height:auto;">
+        </div>
+        <h2 class="text-center mb-3">Вход в панель управления</h2>
+        {% if form.errors %}
+            <p class="text-danger text-center">Неверное имя пользователя или пароль</p>
+        {% endif %}
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-group mb-3">
+                <label for="id_username">Имя пользователя</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group mb-3">
+                <label for="id_password">Пароль</label>
+                {{ form.password }}
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary w-100">Войти</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
