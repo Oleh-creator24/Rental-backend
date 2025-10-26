@@ -1,0 +1,101 @@
+:root {
+  --bg: #0f141a;
+  --panel: #1b1f24;
+  --panel2: #21262c;
+  --text: #e6e6e6;
+  --muted: #a9b1ba;
+  --accent: #64b5f6;
+  --border: #2b323a;
+  --success: #43a047;
+}
+
+/* body + общий фон */
+body, html {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Roboto, sans-serif;
+}
+
+/* header */
+#header {
+  background-color: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+#branding h1 a {
+  color: var(--accent) !important;
+}
+
+/* sidebar */
+#nav-sidebar {
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+}
+#nav-sidebar a.section {
+  color: var(--accent);
+}
+#nav-sidebar li a {
+  color: var(--text);
+}
+#nav-sidebar li a:hover {
+  color: var(--accent);
+}
+
+/* таблицы */
+#content-main table {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+#content-main th {
+  background: var(--panel2);
+  color: #fff;
+  text-transform: uppercase;
+}
+#content-main tr:nth-child(even) {
+  background: #1a1d21;
+}
+#content-main tr:hover {
+  background: #2c333b;
+}
+#content-main td, #content-main th {
+  border-color: var(--border);
+}
+
+/* хлебные крошки */
+div.breadcrumbs {
+  background: var(--panel);
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+/* кнопки */
+.button, input[type=submit], .submit-row input {
+  background-color: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.button:hover, input[type=submit]:hover {
+  background-color: #4fc3f7;
+}
+
+/* ссылки */
+a, a:visited {
+  color: var(--accent);
+}
+a:hover {
+  color: #90caf9;
+}
+
+/* фильтры справа */
+#changelist-filter {
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  color: var(--text);
+}
+
+/* статус активных */
+img[src$="icon-yes.svg"] {
+  filter: hue-rotate(120deg) brightness(1.4);
+}

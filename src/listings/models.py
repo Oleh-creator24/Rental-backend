@@ -13,6 +13,13 @@ CURRENCY_CHOICES = [
     ("CZK", "Czech Koruna"),
 ]
 
+PROPERTY_TYPE_CHOICES = [
+    ("house", "Дом"),
+    ("apartment", "Квартира"),
+    ("studio", "Студия"),
+    ("room", "Комната"),
+]
+
 
 class Listing(models.Model):
     owner = models.ForeignKey(
@@ -24,19 +31,38 @@ class Listing(models.Model):
     title = models.CharField(max_length=255, verbose_name="Название")
     description = models.TextField(verbose_name="Описание")
 
-    #  Цена и валюта
-    price = models.DecimalField(max_digits=10, decimal_places=2,validators=[MinValueValidator(1)], verbose_name="Цена")
+    # 🔹 Цена и валюта
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(1)],
+        verbose_name="Цена",
+    )
     price_currency = models.CharField(
-        max_length=3, choices=CURRENCY_CHOICES, default="EUR", verbose_name="Валюта"
+        max_length=3,
+        choices=CURRENCY_CHOICES,
+        default="EUR",
+        verbose_name="Валюта",
     )
 
-    #  Средний рейтинг
+    # 🔹 Тип жилья и комнаты
+    property_type = models.CharField(
+        max_length=20,
+        choices=PROPERTY_TYPE_CHOICES,
+        default="apartment",
+        verbose_name="Тип жилья",
+    )
+    rooms = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1)],
+        verbose_name="Количество комнат",
+    )
+
+    # 🔹 Средний рейтинг и доступность
     rating = models.FloatField(default=0, verbose_name="Рейтинг")
+    is_available = models.BooleanField(default=True, verbose_name="Активно")
 
-    #  Доступность
-    is_available = models.BooleanField(default=True, verbose_name="Доступно для аренды")
-
-    #  Адрес
+    # 🔹 Адрес
     country = models.CharField(max_length=100, verbose_name="Страна")
     city = models.ForeignKey(
         City,
@@ -52,7 +78,7 @@ class Listing(models.Model):
         max_length=10, null=True, blank=True, verbose_name="Квартира"
     )
 
-    #  Статистика
+    # 🔹 Статистика
     view_count = models.PositiveIntegerField(default=0, verbose_name="Просмотры")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
 
@@ -63,15 +89,17 @@ class Listing(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["owner", "title", "street", "house_number", "apartment_number"],
-                name="unique_owner_listing_address"
+                name="unique_owner_listing_address",
             )
         ]
+
     def __str__(self):
         """Строковое представление объекта"""
         city_name = self.city.name if self.city else "Неизвестный город"
         if self.apartment_number:
             return f"{self.title} — {city_name}, {self.street} {self.house_number}, кв. {self.apartment_number}"
         return f"{self.title} — {city_name}, {self.street} {self.house_number}"
+
 
 class ListingView(models.Model):
     """История просмотров объявлений пользователями"""

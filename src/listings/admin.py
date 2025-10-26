@@ -1,17 +1,35 @@
 from django.contrib import admin
 from .models import Listing, ListingView
 
+
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
     list_display = (
-        "id", "title", "owner", "price", "price_currency",
-        "is_available", "view_count", "created_at"
+        "title",
+        "city",
+        "price",
+        "rooms",
+        "property_type",
+        "is_available",
+        "owner",
+        "created_at",
     )
-    list_filter = ("is_available", "price_currency", "city", "country")
-    search_fields = ("title", "description", "street", "city__name", "country")
+    list_filter = (
+        "city",
+        "property_type",
+        "is_available",
+        "created_at",
+    )
+    search_fields = (
+        "title",
+        "description",
+        "owner__email",
+        "city__name",
+    )
+    list_per_page = 20
     ordering = ("-created_at",)
-    readonly_fields = ("view_count",)
-    date_hierarchy = "created_at"
+    readonly_fields = ("created_at",)
+
 
 @admin.register(ListingView)
 class ListingViewAdmin(admin.ModelAdmin):

@@ -1,10 +1,4 @@
-from django.apps import AppConfig
-from django.contrib import admin
+from django.contrib.admin.apps import AdminConfig
 
-class ConfigConfig(AppConfig):
-    name = "config"
-
-    def ready(self):
-        admin.site.site_header = "Система аренды жилья"
-        admin.site.site_title = "Панель управления"
-        admin.site.index_title = "Добро пожаловать в админ-панель"
+class CustomAdminConfig(AdminConfig):
+    default_site = "src.config.admin_dashboard.CustomAdminSite"

@@ -27,25 +27,8 @@ class ListingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Listing
-        fields = [
-            "id",
-            "owner",
-            "title",
-            "description",
-            "price",
-            "price_currency",
-            "converted_price",
-            "is_available",
-            "country",
-            "city",
-            "street",
-            "house_number",
-            "apartment_number",
-            "view_count",
-            "created_at",
-            "local_created_at",
-            "__all__",
-        ]
+        fields = "__all__"
+
         read_only_fields = ["id", "owner", "view_count", "created_at"]
 
     def get_converted_price(self, obj):

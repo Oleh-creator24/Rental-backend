@@ -1,11 +1,11 @@
-from django.urls import path
+
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ListingListCreateView, ListingDetailView,ListingViewSet
+from .views import ListingViewSet
 
 router = DefaultRouter()
-router.register(r"listings", ListingViewSet, basename="listing")
+router.register(r"", ListingViewSet, basename="listing")
 
 urlpatterns = [
-    path("", ListingListCreateView.as_view(), name="listing-list-create"),
-    path("<int:pk>/", ListingDetailView.as_view(), name="listing-detail"),
+    path("", include(router.urls)),
 ]

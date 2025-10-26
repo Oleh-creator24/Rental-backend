@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="{% static 'admin/css/dark_theme.css' %}">
+{% endblock %}
+
+{% block title %}Система аренды жилья{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Система аренды жилья</a></h1>
+{% endblock %}

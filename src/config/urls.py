@@ -6,16 +6,14 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
     SpectacularRedocView,
 )
-from config.admin_dashboard import custom_admin_site
+
 from listings.views import ListingViewSet
 from bookings.views import BookingViewSet
 from reviews.views import ReviewViewSet
 from stats.views import StatsViewSet
-
-# 🔹 импорт кастомных JWT-классов
 from users.auth_views import CustomTokenObtainPairView, CustomTokenRefreshView
 
-# --- Основные роутеры ---
+# --- Основной роутер ---
 router = routers.DefaultRouter()
 router.register(r"listings", ListingViewSet, basename="listing")
 router.register(r"bookings", BookingViewSet, basename="booking")
@@ -26,22 +24,37 @@ listings_router = routers.NestedDefaultRouter(router, r"listings", lookup="listi
 listings_router.register(r"reviews", ReviewViewSet, basename="listing-reviews")
 
 urlpatterns = [
-    path("admin/", custom_admin_site.urls),
-    path("api/", include("src.api_router")),
+    # --- Админка ---
+    path("admin/", admin.site.urls),
 
-    # --- AUTH (JWT endpoints) ---
+    # --- JWT аутентификация ---
     path("api/v1/auth/login/", CustomTokenObtainPairView.as_view(), name="auth-login"),
     path("api/v1/auth/refresh/", CustomTokenRefreshView.as_view(), name="auth-refresh"),
 
-    # --- USERS ---
+    # --- Основные API-модули ---
     path("api/v1/users/", include("users.urls")),
+    path("api/v1/listings/", include("listings.urls")),
+    path("api/v1/bookings/", include("bookings.urls")),
+    path("api/v1/reviews/", include("reviews.urls")),
 
-    # --- API ресурсы ---
+    # --- Автоматические маршруты ViewSet’ов ---
     path("api/v1/", include(router.urls)),
     path("api/v1/", include(listings_router.urls)),
 
-    # --- Документация ---
+    # --- Документация API ---
     path("api/v1/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("api/v1/schema/swagger-ui/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    path("api/v1/schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    path(
+        "api/v1/schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/v1/schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
+    ),
+
+    # --- (опционально) глобальный API router ---
+    # Убедись, что src/api_router.py существует и корректно подключает маршруты
+    path("api/", include("src.api_router")),
 ]

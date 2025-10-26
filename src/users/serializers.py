@@ -46,3 +46,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"group": f"Группа '{group_name}' не существует. Запусти init_groups."})
 
         return user
+
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Базовый сериализатор для отображения пользователя в других моделях (например, Booking)
+    """
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]

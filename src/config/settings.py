@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 
     # Django core
     "django.contrib.admin",
+
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
 
     # Third-party
     "rest_framework",
+    'rest_framework_simplejwt.token_blacklist',
     "rest_framework_simplejwt",
     "rest_framework.authtoken",
     "drf_spectacular",
@@ -63,6 +65,7 @@ INSTALLED_APPS = [
     "reviews",
     "stats",
     "locations",
+
 ]
 
 
@@ -137,7 +140,7 @@ JAZZMIN_SETTINGS = {
     "dark_mode_theme": "cyborg",
 }
 
-
+AUTH_USER_MODEL = "users.User"
 
 # ----------------------------------------------------------------------------- #
 # JAZZMIN CUSTOM UI
@@ -146,6 +149,8 @@ JAZZMIN_UI_TWEAKS = {
     "custom_css": "css/jazzmin_custom.css",
     "custom_js": None,
 }
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # ----------------------------------------------------------------------------- #
 # MIDDLEWARE / URLCONF / WSGI
@@ -160,7 +165,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "config.urls"
+ROOT_URLCONF = "src.config.urls"
 
 TEMPLATES = [
     {
@@ -177,6 +182,11 @@ TEMPLATES = [
         },
     },
 ]
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "src" / "static",  # ✅ путь к статике
+]
+
 
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -235,8 +245,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # ----------------------------------------------------------------------------- #
 # DEFAULTS
 # ----------------------------------------------------------------------------- #
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_USER_MODEL = "users.User"
+DEFAULT_SITE = "django.contrib.admin.sites.AdminSite"
+
 
 # ----------------------------------------------------------------------------- #
 # REST FRAMEWORK / JWT / DOCS

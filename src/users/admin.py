@@ -1,76 +1,48 @@
 from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import Group
+from django.utils.translation import gettext_lazy as _
 
-User = get_user_model()
-
-
-# 👇 Кастомный фильтр по группам
-class GroupFilter(admin.SimpleListFilter):
-    title = "By group"
-    parameter_name = "group"
-
-    def lookups(self, request, model_admin):
-        """Доступные варианты фильтра"""
-        return [
-            ("tenant", "Tenant"),
-            ("landlord", "Landlord"),
-            ("none", "No Group"),
-        ]
-
-    def queryset(self, request, queryset):
-        """Фильтрация пользователей по группам"""
-        if self.value() == "tenant":
-            return queryset.filter(groups__name="Tenant")
-        elif self.value() == "landlord":
-            return queryset.filter(groups__name="Landlord")
-        elif self.value() == "none":
-            return queryset.filter(groups__isnull=True)
-        return queryset
+from .models import User
 
 
-#  Единый класс админки для User
+
 @admin.register(User)
-class CustomUserAdmin(BaseUserAdmin):
+class UserAdmin(BaseUserAdmin):
     """
-    Кастомная админка пользователя с фильтром по группам
-    и отображением ролей (Tenant / Landlord / и т.д.).
+    Кастомная админка пользователей с отображением ролей и групп.
     """
 
-    list_display = ("username", "email", "display_groups", "is_staff", "is_active", "is_superuser")
-    list_filter = ("is_staff", "is_superuser", "is_active", GroupFilter)
+    list_display = ("username", "email", "role", "is_active", "is_staff", "date_joined")
+    list_filter = ("is_active", "is_staff", "groups")
     search_fields = ("username", "email")
-    ordering = ("username",)
-    filter_horizontal = ("groups", "user_permissions")
+    ordering = ("-date_joined",)
+    readonly_fields = ("last_login", "date_joined")
 
     fieldsets = (
         (None, {"fields": ("username", "email", "password")}),
-        ("Permissions", {"fields": ("is_staff", "is_active", "is_superuser", "groups", "user_permissions")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name")}),
+        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
 
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": (
-                "username", "email", "password1", "password2",
-                "is_staff", "is_active", "is_superuser", "groups"
-            ),
+            "fields": ("username", "email", "password1", "password2", "groups"),
         }),
     )
 
-    def display_groups(self, obj):
-        """Отображает список групп (Tenant / Landlord / и т.д.)"""
-        groups = obj.groups.values_list("name", flat=True)
-        return ", ".join(groups) if groups else "—"
+    def role(self, obj):
+        return obj.role
 
-    display_groups.short_description = "Groups"
+    role.short_description = "Роль"
 
 
-#  Регистрируем модель Group отдельно (если не отображается)
+#  Регистрируем в стандартной админке
+# (чтобы избежать цикла, подключим custom_admin_site позже)
 try:
-    admin.site.unregister(Group)
-except admin.sites.NotRegistered:
+    from src.config.admin_dashboard import custom_admin_site
+    custom_admin_site.register(User, UserAdmin)
+except Exception:
+    # Во время миграций admin_dashboard может быть ещё не загружен — пропускаем
     pass
-
-admin.site.register(Group)
