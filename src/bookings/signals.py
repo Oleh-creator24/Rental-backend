@@ -147,7 +147,7 @@ def booking_email_notifications(sender, instance: Booking, created: bool, **kwar
                 ),
             )
 
-        # Для прочих статусов письма не шлём
+
     except Exception as e:
         logger.error(f"[BOOKINGS][EMAIL] Ошибка при обработке сигнала: {e}", exc_info=True)
 

@@ -32,7 +32,7 @@ class TestBookingsAPI:
             title="Квартира у моря",
             description="2 комнаты, отличный вид",
             price=120.0,
-            location="Hamburg",   # ✅ заменили address → location
+            location="Hamburg",
             owner=self.user,
             is_available=True
         )

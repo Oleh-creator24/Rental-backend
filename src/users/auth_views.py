@@ -1,5 +1,7 @@
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.utils import extend_schema
+from .serializers import CustomTokenObtainPairSerializer
+
 
 @extend_schema(
     tags=["Auth"],
@@ -7,7 +9,7 @@ from drf_spectacular.utils import extend_schema
     description="Получение пары токенов (access и refresh) по email и паролю."
 )
 class CustomTokenObtainPairView(TokenObtainPairView):
-    pass
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 @extend_schema(

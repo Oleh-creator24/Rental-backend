@@ -10,7 +10,7 @@ def send_booking_email(to_email, subject, message):
         send_mail(
             subject=subject,
             message=message,
-            from_email=None,  # возьмёт DEFAULT_FROM_EMAIL
+            from_email=None,
             recipient_list=[to_email],
             fail_silently=False,
         )

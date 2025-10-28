@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from bookings.models import Booking
 from listings.serializers import ListingSerializer
-from users.serializers import UserSerializer
+from users.serializers_user import UserSerializer
 
 
 class BookingSerializer(serializers.ModelSerializer):

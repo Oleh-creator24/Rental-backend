@@ -37,7 +37,7 @@ class SearchQuery(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="stats_queries",  #  уникальное имя для избежания конфликтов
+        related_name="stats_queries",
     )
     query = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)

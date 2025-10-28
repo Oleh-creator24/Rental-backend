@@ -1,17 +1,19 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_nested import routers
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularSwaggerView,
-    SpectacularRedocView,
-)
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 from listings.views import ListingViewSet
 from bookings.views import BookingViewSet
 from reviews.views import ReviewViewSet
 from stats.views import StatsViewSet
 from users.auth_views import CustomTokenObtainPairView, CustomTokenRefreshView
+
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.conf import settings
+from django.conf.urls.static import static
+from pathlib import Path
+
 
 # --- Основной роутер ---
 router = routers.DefaultRouter()
@@ -23,38 +25,33 @@ router.register(r"stats", StatsViewSet, basename="stats")
 listings_router = routers.NestedDefaultRouter(router, r"listings", lookup="listing")
 listings_router.register(r"reviews", ReviewViewSet, basename="listing-reviews")
 
+# --- Основные URL ---
 urlpatterns = [
-    # --- Админка ---
     path("admin/", admin.site.urls),
 
-    # --- JWT аутентификация ---
+    # === Пользователи ===
+    path("api/v1/users/", include("users.urls")),
+
+    # === Аутентификация ===
     path("api/v1/auth/login/", CustomTokenObtainPairView.as_view(), name="auth-login"),
     path("api/v1/auth/refresh/", CustomTokenRefreshView.as_view(), name="auth-refresh"),
 
-    # --- Основные API-модули ---
-    path("api/v1/users/", include("users.urls")),
-    path("api/v1/listings/", include("listings.urls")),
-    path("api/v1/bookings/", include("bookings.urls")),
-    path("api/v1/reviews/", include("reviews.urls")),
-
-    # --- Автоматические маршруты ViewSet’ов ---
+    # === Автоматические маршруты ===
     path("api/v1/", include(router.urls)),
     path("api/v1/", include(listings_router.urls)),
 
-    # --- Документация API ---
-    path("api/v1/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path(
-        "api/v1/schema/swagger-ui/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
-        name="swagger-ui",
-    ),
-    path(
-        "api/v1/schema/redoc/",
-        SpectacularRedocView.as_view(url_name="schema"),
-        name="redoc",
-    ),
+    # === JWT стандартные ===
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
-    # --- (опционально) глобальный API router ---
-    # Убедись, что src/api_router.py существует и корректно подключает маршруты
-    path("api/", include("src.api_router")),
+    # === Документация ===
+    path("api/v1/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 ]
+
+# --- Статика и медиа ---
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static("/media/", document_root=BASE_DIR / "media")
