@@ -23,7 +23,7 @@ class BookingViewSet(viewsets.ModelViewSet):
     """CRUD операции и управление бронированиями"""
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
 
 
     def get_queryset(self):

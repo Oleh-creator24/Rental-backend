@@ -1,3 +1,7 @@
+#from .permissions import IsOwnerOrReadOnly
+from rest_framework.permissions import IsAuthenticated
+#from .permissions import IsLandlord
+
 from rest_framework import viewsets, permissions, filters, decorators, response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import F, Count, Sum, Q
@@ -8,7 +12,7 @@ from .models import Listing, ListingView
 from stats.models import SearchHistory
 from .serializers import ListingSerializer, ListingViewSerializer
 from .filters import ListingFilter
-from common.permissions import IsOwnerOrReadOnly, IsLandlord
+#from common.permissions import IsOwnerOrReadOnly, IsLandlord
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
@@ -36,7 +40,8 @@ class ListingViewSet(viewsets.ModelViewSet):
 
     queryset = Listing.objects.all().order_by("-created_at")
     serializer_class = ListingSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = ListingFilter
     search_fields = ["title", "description", "city", "country", "street"]
@@ -49,10 +54,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
     def get_permissions(self):
-        if self.action == "create":
-            return [IsLandlord()]
-        if self.action in ("update", "partial_update", "destroy"):
-            return [IsOwnerOrReadOnly()]
+
         return [IsAuthenticatedOrReadOnly()]
 
     # -------------------------------------
@@ -103,7 +105,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         if max_price:
             qs = qs.filter(price__lte=max_price)
 
-        # ✅ Записываем поисковую историю
+
         if query:
             user = self.request.user if self.request.user.is_authenticated else None
             record, created = SearchHistory.objects.get_or_create(

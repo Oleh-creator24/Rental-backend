@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django_filters",
 
     # Third-party
+    "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
     "rest_framework_simplejwt",
@@ -72,6 +73,7 @@ AUTH_USER_MODEL = "users.User"
 # ----------------------------------------------------------------------------- #
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",           # ✅ ВАЖНО: перед SessionMiddleware
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -82,6 +84,29 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "src.config.urls"
 
+# ----------------------------------------------------------------------------- #
+# CORS (для Swagger и Docker)
+# ----------------------------------------------------------------------------- #
+CORS_ALLOW_ALL_ORIGINS = True  # ✅ Разрешаем все источники (удобно для демонстрации)
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
+
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "accept",
+    "origin",
+    "x-requested-with",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# ----------------------------------------------------------------------------- #
+# TEMPLATES
+# ----------------------------------------------------------------------------- #
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -101,7 +126,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ----------------------------------------------------------------------------- #
-# DATABASE (выбор между MySQL и PostgreSQL)
+# DATABASE (MySQL / PostgreSQL)
 # ----------------------------------------------------------------------------- #
 DB_ENGINE = os.getenv("DB_ENGINE", "mysql").lower()
 
@@ -212,7 +237,6 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "1") in ("1", "true", "True")
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", EMAIL_HOST_USER or "webmaster@localhost")
-
 
 # --- TEST SETTINGS ---
 if any(cmd in sys.argv[0] or cmd in sys.argv for cmd in ["test", "pytest"]):
